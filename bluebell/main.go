@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bluebell/controllers"
 	"bluebell/dao/mysql"
 	"bluebell/dao/redis"
 	"bluebell/pkg/snowflake"
@@ -68,7 +69,14 @@ func main() {
 		fmt.Printf("init snowflake failed, err:%v\n", err)
 		return
 	}
-	r := routes.Setup()
+	//初始化gin框架内置校验器的翻译器
+	if err := controllers.InitTrans("zh"); err != nil {
+		fmt.Printf("init validator trans failed, err:%v\n", err)
+		return
+	}
+
+	//注册路由
+	r := routes.SetupRouter()
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", viper.GetInt("app.port")),
